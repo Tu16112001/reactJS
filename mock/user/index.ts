@@ -9,12 +9,12 @@ const adminInfo = {
 	userId: "1",
 	username: "admin",
 	realName: "Admin",
-	avatar: "https://p6-passport.byteacctimg.com/img/user-avatar/16981ccf6c67324125a416ddccee33cb~90x90.awebp",
+	avatar: "https://www.facebook.com/photo/?fbid=701168711568953&set=pob.100050274910149",
 	desc: "manager",
 	password: "admin",
 	permissions: [
 		{
-			label: "控制台",
+			label: "Bảng điều khiển",
 			value: "dashboard",
 		},
 	],

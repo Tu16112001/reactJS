@@ -18,7 +18,7 @@ export function Footer() {
 
 	return (
 		<AntdFooter className={classes.footer}>
-			Copyright &copy; 2023 Condor Hero All right reserved
+			<p>@ 2023 Shop Runner </p>
 		</AntdFooter>
 	);
 }
