@@ -1,15 +1,14 @@
-import { Button, Col, Divider, Form, Image, Input, Modal, Pagination, Row, Space, Table } from 'antd';
+import { Button, Col, Divider, Modal, Pagination, Row, Space, Table, Tag } from 'antd';
 import Column from 'antd/es/table/Column';
 import { EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAxios from '../../../../utils/request';
-import {  API_PRODUCT, getProductImageUrl } from '../../../../api/user';
+import {  API_CATEGORY, detelePlayerImage } from '../../../../api/user';
 
-function ListProduct() {
-  const [products, setProducts] = useState([]);
-  const [query, setQuery] = useState('');
+function Categorieslist() {
+  const [categories, setCategories] = useState([]);
   const [pagination, setPagination] = useState({
     size: 5,
     totalElements: 0,
@@ -18,25 +17,18 @@ function ListProduct() {
   const [page, setPage] = useState(0);
   const [render, setRender] = useState(false);
   const navigate = useNavigate();
+  const api = useAxios();
 
   const onChange = (pageNumber, pageSize) => {
     console.log(pageNumber, pageSize);
     setPage(pageNumber - 1);
   };
-  const api = useAxios();
 
-  const onInput = (e) => {
-    setQuery(e.target.value);
-  };
   useEffect(() => {
     const fectchApi = async () => {
       try {
-        const response = await api.get(
-          API_PRODUCT + `/find?query=${query}&size=${pagination.size}&sort=id&page=${page}`,
-        );
-        console.log(response)
-        setProducts(response.data.content);
-        console.log(getProductImageUrl(response.data.content[1].image));
+        const response = await api.get(API_CATEGORY + `/page?size=${pagination.size}&sort=id&page=${page}`);
+        setCategories(response.data.content);
         setPagination({
           ...pagination,
           totalElements: response.data.totalElements,
@@ -47,16 +39,16 @@ function ListProduct() {
       }
     };
     fectchApi();
-  }, [render || page || query]);
+  }, [render || page]);
 
-  const editCategory = (product) => {
-    navigate('/product/update/' + product.id);
+  const editCategory = (category) => {
+    navigate('/categorie/update/' + category.id);
   };
 
-  const deleteCategory = async (product) => {
-    console.log(product);
+  const deleteCategory = async (category) => {
+    console.log(category);
     try {
-      const response = await api.delete(API_PRODUCT + '/' + product.id);
+      const response = await api.delete(API_CATEGORY + '/' + category.id);
       console.log(response);
       setRender(!render);
     } catch (error) {
@@ -76,13 +68,13 @@ function ListProduct() {
     }
   };
 
-  const openDeleteConfirmModal = (product) => {
-    const message = 'Are you sure delete product ' + product.name;
+  const openDeleteConfirmModal = (category) => {
+    const message = 'Are you sure delete category ' + category.name;
 
     Modal.confirm({
       title: 'Confirm',
       icon: <ExclamationCircleOutlined />,
-      onOk: () => deleteCategory(product),
+      onOk: () => deleteCategory(category),
       okText: 'Delete',
       cancelText: 'Cancel',
       content: message,
@@ -91,41 +83,36 @@ function ListProduct() {
 
   return (
     <>
-      <h1>List Products</h1>
+      <h1>Categories List</h1>
       <Divider></Divider>
-      <Col md={6}>
-        <Form.Item label="Product Search">
-          <Input placeholder="Product Search" onChange={(e) => onInput(e)}></Input>
-        </Form.Item>
-      </Col>
-      <Divider></Divider>
+
       <Row>
         <Col md={24}>
-          <Table dataSource={products} size="small" rowKey="id" pagination={false}>
-            <Column title="Category Id" key="id" dataIndex="id" width={120} align="center"></Column>
+          <Table dataSource={categories} size="small" rowKey="id" pagination={false}>
+            <Column title="Category Id" key="id" dataIndex="id" width={140} align="center"></Column>
+            <Column title="Category Name" key="name" dataIndex="name"></Column>
             <Column
-              title="Image"
-              key="image"
-              dataIndex="image"
-              width={140}
+              title="Category Status"
+              key="status"
+              dataIndex="status"
               align="center"
-              render={(_, record) => (
-                <Space size="middle">
-                  <Image width={80} height={80} src={getProductImageUrl(record.image)}></Image>
-                </Space>
-              )}
+              width={180}
+              render={(_, { status }) => {
+                let color = 'volcano';
+                let name = 'In-visible';
+                if (status === 'Visible') {
+                  color = 'green';
+                  name = 'Visible';
+                }
+
+                return <Tag color={color}>{name}</Tag>;
+              }}
             ></Column>
-            <Column title="Name" key="name" dataIndex="price"></Column>
-            <Column title="Price" key="price" dataIndex="price" width={120}></Column>
-            <Column title="Quantity" key="quantity" dataIndex="description" width={120}></Column>
-            <Column title="Discount" key="discount" dataIndex="rating" width={120}></Column>
-            <Column title="Category" key="categoryName" dataIndex="category" width={140}></Column>
-            <Column title="Status" key="status" dataIndex="status" width={120}></Column>
             <Column
               title="Action"
               key="action"
               align="center"
-              width={240}
+              width={340}
               render={(_, record) => (
                 <Space size="middle">
                   <Button key={record.key} type="primary" size="small" onClick={() => editCategory(record)}>
@@ -162,4 +149,4 @@ function ListProduct() {
   );
 }
 
-export default ListProduct;
+export default Categorieslist;

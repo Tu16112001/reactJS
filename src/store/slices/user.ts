@@ -28,8 +28,8 @@ export const userSlice = createSlice({
 	initialState: {
 		token: window.localStorage.getItem("token"),
 		userId: "",
-		username: "Admin",
-		realName: "1",
+		username: "",
+		realName: "",
 		avatar: "",
 		desc: "",
 		password: "",
